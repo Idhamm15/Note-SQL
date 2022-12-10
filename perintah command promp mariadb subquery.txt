@@ -1,0 +1,77 @@
+1.
+SELECT alamat FROM daftar_nama WHERE nama = 'Dimas Bintang Pratama';
+SELECT nama, alamat FROM daftar_nama WHERE alamat = 
+(SELECT alamat FROM daftar_nama WHERE nama = 'Dimas Bintang Pratama');
+
+2.
+UPDATE daftar_nama SET alamat = (SELECT alamat FROM daftar_nama WHERE nama = 'Dimas Bintang Pratama')
+WHERE nama = 'Ale Sodikin'
+OR nama = 'Tuti Handayani'
+OR nama = 'Chelsea Putri Olivia'
+OR nama = 'Ahmad Hillal Ramadhan;
+
+3.
+SELECT nama, tanggal_lahir FROM daftar_nama
+WHERE YEAR(tanggal_lahir)=
+(SELECT YEAR(tanggal_lahir) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama')
+AND nama != 'Dimas Bintang Pratama';
+
+4.
+SELECT nama, tanggal_lahir FROM daftar_nama
+WHERE MONTH(tanggal_lahir)=
+(SELECT MONTH(tanggal_lahir) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama')
+AND nama != 'Dimas Bintang Pratama';
+
+5.
+SELECT nama FROM daftar_nama
+WHERE LENGTH(nama)=
+(SELECT LENGTH(nama) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama');
+
+6.
+SELECT nama,no_hp FROM daftar_nama
+WHERE LEFT(no_hp,4)=
+(SELECT LEFT(no_hp,4) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama');
+
+7.
+SELECT nama, tanggal_lahir FROM daftar_nama
+WHERE LEFT(tanggal_lahir,7)=
+(SELECT LEFT(tanggal_lahir,7) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama')
+AND nama != 'Dimas Bintang Pratama';
+
+SELECT nama, tanggal_lahir FROM daftar_nama
+WHERE YEAR(tanggal_lahir)=
+(SELECT YEAR(tanggal_lahir) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama')
+AND MONTH(tanggal_lahir)=
+(SELECT MONTH(tanggal_lahir) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama')
+AND nama != 'Dimas Bintang Pratama';
+
+8.
+SELECT * FROM
+(SELECT jk, COUNT(*) AS jumlah FROM daftar_nama GROUP BY jk) a
+where a.jumlah =
+(SELECT MAX(a.jumlah) FROM
+(SELECT jk, COUNT(*) AS jumlah FROM daftar_nama GROUP BY jk) a);
+
+
+
+
+jawaban nomer 1 :
+
+SELECT nama, jk, no_hp, tempat_lahir, tanggal_lahir FROM daftar_nama
+WHERE alamat(tanggal_lahir)=
+(SELECT YEAR(tanggal_lahir) FROM daftar_nama
+WHERE nama = 'Dimas Bintang Pratama')
+AND nama != 'Dimas Bintang Pratama';
+
+
+jawaban challengen :
+
+SELECT nama,tanggal_lahir FROM daftar_nama WHERE DATE_FORMAT(tanggal_lahir,'%m%d') BETWEEN DATE_FORMAT(CURDATE(),'%m%d')
+AND DATE_FORMAT((INTERVAL 5 DAY + CURDATE()),'%m %d') ORDER BY DATE_FORMAT(tanggal_lahir,'%m %d');

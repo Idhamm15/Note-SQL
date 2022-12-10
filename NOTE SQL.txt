@@ -1,0 +1,170 @@
+Perintah UPDATE :
+MariaDB [coba]> UPDATE daftar_nama
+    -> SET alamat = 'Jl. Kemantren RT 05 RW 03 Desa Jembayat Kecamatan Margasari Kabupaten Tegal'
+    -> WHERE nama = 'MOHAMAD IDHAM BAHRI';
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+
+Perintah Menghitung jumlah :
+SELECT COUNT(*) FROM daftar_nama;
+MariaDB [coba]> SELECT jk, COUNT(*) FROM daftar_nama GROUP BY jk; Kelompokkna berdasarkan jenis kelamin
+
+Menghitung Jumlah Berdasarkan tempat lahir :
+MariaDB [coba]> SELECT tempat_lahir, COUNT(*) FROM daftar_nama GROUP BY tempat_lahir;\\
+
+Menghitung Jumlah Berdasarkan urutan alfabet :
+MariaDB [coba]> SELECT LEFT(nama,1) as inisial, COUNT(*) FROM daftar_nama
+    -> GROUP BY inisial;
+
+Menghitung Jumlah Berdasarkan panjang nama :
+MariaDB [coba]> SELECT length (nama) as jumlah,COUNT(*) FROM daftar_nama
+    -> GROUP BY jumlah;
+
+Menghitung Jumlah Berdasarkan Tahun Lahir :
+MariaDB [coba]> SELECT YEAR(tanggal_lahir), COUNT(*) FROM daftar_nama
+    -> GROUP BY YEAR(tanggal_lahir);
+
+Menghitung Jumlah Berdasarkan Bulan Lahir :
+MariaDB [coba]> SELECT MONTH(tanggal_lahir), COUNT(*) FROM daftar_nama
+    -> GROUP BY MONTH(tanggal_lahir);
+
+MariaDB [coba]> SELECT MONTHNAME(tanggal_lahir), COUNT(*) FROM daftar_nama
+    -> GROUP BY MONTH(tanggal_lahir);
+
+Menghitung Jumlah Berdasarkan Hari Lahir :
+MariaDB [coba]> SELECT DAYNAME(tanggal_lahir), COUNT(*) FROM daftar_nama
+    -> GROUP BY DAYNAME(tanggal_lahir);
+
+Perkondisian :
+MariaDB [coba]> SELECT nama, jk,
+    -> CASE jk
+    -> WHEN 'L'
+    -> THEN 'Laki-laki'
+    -> ELSE 'Perempuan'
+    -> END AS jenis
+    -> FROM daftar_nama LIMIT 115,5;
+
+MariaDB [coba]> SELECT nama, jk,
+    -> CASE
+    -> WHEN jk = 'L'
+    -> THEN 'Laki-laki'
+    -> ELSE 'Perempuan'
+    -> END AS jenis
+    -> FROM daftar_nama LIMIT 115,5;
+
+
+MariaDB [coba]> SELECT nama, tanggal_lahir,
+    -> CASE
+    -> WHEN YEAR(NOW())-YEAR(tanggal_lahir) <= 5 THEN 'Balita'
+    -> WHEN YEAR(SYSDATE())-YEAR(tanggal_lahir) <= 13 THEN 'Anak-Anak'
+    -> WHEN YEAR(CURDATE())-YEAR(tanggal_lahir) <= 18 THEN 'Remaja'
+    -> WHEN YEAR(CURRENT_DATE())-YEAR(tanggal_lahir) <= 40 THEN 'Dewasa'
+    -> WHEN YEAR(CURRENT_DATE())-YEAR(tanggal_lahir) <= 50 THEN 'Paruh Baya'
+    -> ELSE 'Lansia'
+    -> END AS Usia
+    -> FROM daftar_nama LIMIT 123,5;
+
+
+Challenge Mengurutkan nomer hp berdasarkan operator
+
+
+
+
+
+
+Mencari Tanggal Dan Bulan yang sama
+MariaDB [coba]> select nama, tanggal_lahir from daftar_nama
+    -> where year(tanggal_lahir)=
+    -> (select year(tanggal_lahir) from daftar_nama
+    -> where nama = 'MOHAMAD IDHAM BAHRI')
+    -> AND month(tanggal_lahir)=
+    -> (select month(tanggal_lahir) from daftar_nama
+    -> where nama = 'MOHAMAD IDHAM BAHRI')
+    -> AND nama <> 'MOHAMAD IDHAM BAHRI';
++---------------------------------+---------------+
+| nama                            | tanggal_lahir |
++---------------------------------+---------------+
+| MOCHAMMAD FEBRIAN MAULANA HESDA | 2003-02-26    |
++---------------------------------+---------------+
+1 row in set (0.007 sec)
+
+MariaDB [coba]>
+
+
+Mencari Jenis kelamin yang paling tinggi :
+MariaDB [coba]> SELECT * FROM
+    -> (SELECT jk, COUNT(*) AS jml FROM daftar_nama GROUP BY jk) a
+    -> WHERE a.jml =
+    -> (SELECT MAX(a.jml) FROM
+    -> (SELECT jk, COUNT(*) AS jml FROM daftar_nama GROUP BY jk) a);
++----+-----+
+| jk | jml |
++----+-----+
+| L  | 211 |
++----+-----+
+1 row in set (0.013 sec)
+
+MariaDB [coba]>
+
+menghitung nama paling banyak lahir tahun brapa :
+SELECT * FROM
+(SELECT YEAR(tanggal_lahir) as tahun,COUNT(*) as jml FROM daftar_nama GROUP BY tahun) a
+WHERE a.jml =
+(SELECT MAX(a.jml) FROM
+(SELECT YEAR(tanggal_lahir) as tahun, COUNT(*) as jml FROM daftar_nama GROUP BY tahun) a);
+
+
+Siapa saja yang jenis kelaminnnya sama dengan saya :
+SELECT nama, jk FROM daftar_nama
+WHERE jk =
+(SELECT jk FROM daftar_nama WHERE nama = 'MOHAMAD IDHAM BAHRI');
+
+
+=================================== MENAMPILKAN BULAN YANG SAMA DENGAN NAMA SAYA ===========================
+MariaDB [(none)]> use coba
+Database changed
+MariaDB [coba]> SELECT nama,jk,tanggal_lahir FROM daftar_nama
+    -> WHERE MONTH(tanggal_lahir)=
+    -> (SELECT MONTH(tanggal_lahir) FROM daftar_nama
+    -> WHERE nama = 'MOHAMAD IDHAM BAHRI')
+    -> AND nama != 'MOHAMAD IDHAM BAHRI';
++---------------------------------+----+---------------+
+| nama                            | jk | tanggal_lahir |
++---------------------------------+----+---------------+
+| Ali Imron                       | L  | 1980-02-05    |
+| TRIYONO NGADIYANTO              | L  | 1977-02-06    |
+| M. BIL MAHRUS                   | L  | 1979-02-09    |
+| MOCHAMMAD FEBRIAN MAULANA HESDA | L  | 2003-02-26    |
+| Nur Laela                       | P  | 1982-02-28    |
+| Darwaningsih                    | P  | 1982-02-28    |
+| Yusuf Habibie                   | L  | 2011-02-01    |
+| AGHNIYAH BUNGA ALHESDA          | P  | 2013-02-04    |
+| NURUL HIDAYAH AZZAH HIDAH       | P  | 2005-02-08    |
+| Suhadi                          | L  | 1968-02-02    |
+| Imam Santoso                    | L  | 1980-02-05    |
+| Ramin                           | L  | 1978-02-10    |
+| Muhammad Afwan Khafidz          | L  | 2002-02-11    |
+| SURIP                           | L  | 1954-02-15    |
+| WAIEN SUYDAR                    | L  | 1964-02-15    |
+| Rudi Antoro                     | L  | 1975-02-17    |
+| AHMAD AWALI YUSUF               | L  | 1997-02-17    |
+| BAMBANG PONCOWOLO               | L  | 1975-02-21    |
+| Agung Jugo Wachju Satrijo       | L  | 1977-02-26    |
+| NURUL FEBI ANISA                | P  | 2002-02-05    |
+| WURYANTI                        | P  | 1953-02-07    |
+| Fifi Fatmawati                  | P  | 1979-02-07    |
+| Hafizhatul Awaliyah             | P  | 1997-02-12    |
+| TANTI DEWI PURWANTI             | P  | 1978-02-22    |
+| MUTOHAROH                       | P  | 1984-02-22    |
+| NUR AZIZAH                      | P  | 1991-02-23    |
+| Dewi Purwaningsih               | P  | 1979-02-27    |
+| FITRI NUR FEBRIANI              | P  | 1997-02-28    |
++---------------------------------+----+---------------+
+28 rows in set (0.029 sec)
+
+
+
+SELECT * FROM daftar_nama WHERE (date NOW)
+1
+SELECT * FROM murid WHERE (date BETWEEN '2017-04-19' AND NOW(date))
